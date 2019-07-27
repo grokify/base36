@@ -33,6 +33,21 @@ var (
 	}
 )
 
+// Encode encodes a number to base36.
+func Encode(value uint64) string {
+	var res [16]byte
+	var i int
+	for i = len(res) - 1; ; i-- {
+		res[i] = base36[value%36]
+		value /= 36
+		if value == 0 {
+			break
+		}
+	}
+
+	return string(res[i:])
+}
+
 // EncodeBigInt encodes a number to base36.
 func EncodeBigInt(value *big.Int) string {
 	var res [128]byte
@@ -42,21 +57,6 @@ func EncodeBigInt(value *big.Int) string {
 		res[i] = base36[remainder.Int64()]
 		value = bigint.Div(value, big.NewInt(36))
 		if value.String() == "0" {
-			break
-		}
-	}
-
-	return string(res[i:])
-}
-
-// Encode encodes a number to base36.
-func Encode(value uint64) string {
-	var res [16]byte
-	var i int
-	for i = len(res) - 1; ; i-- {
-		res[i] = base36[value%36]
-		value /= 36
-		if value == 0 {
 			break
 		}
 	}
