@@ -33,25 +33,14 @@ var (
 	}
 )
 
-// ModBigInt performs `a mod n`
-func modBigInt(a, n *big.Int) *big.Int {
-	amodn := new(big.Int)
-	return amodn.Mod(a, n)
-}
-
-func divBigInt(a, b *big.Int) *big.Int {
-	amodn := new(big.Int)
-	return amodn.Div(a, b)
-}
-
 // EncodeBigInt encodes a number to base36.
 func EncodeBigInt(value *big.Int) string {
 	var res [128]byte
 	var i int
 	for i = len(res) - 1; ; i-- {
-		remainder := modBigInt(value, bigRadix)
+		remainder := bigutil.ModInt(value, bigRadix)
 		res[i] = base36[remainder.Int64()]
-		value = divBigInt(value, big.NewInt(36))
+		value = bigutil.DivInt(value, big.NewInt(36))
 		if value.String() == "0" {
 			break
 		}
