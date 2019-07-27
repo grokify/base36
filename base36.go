@@ -5,7 +5,7 @@ import (
 	"math/big"
 	"strings"
 
-	"github.com/grokify/gotilla/math/bigutil"
+	"github.com/grokify/gotilla/math/bigint"
 )
 
 var (
@@ -38,9 +38,9 @@ func EncodeBigInt(value *big.Int) string {
 	var res [128]byte
 	var i int
 	for i = len(res) - 1; ; i-- {
-		remainder := bigutil.ModInt(value, bigRadix)
+		remainder := bigint.Mod(value, bigRadix)
 		res[i] = base36[remainder.Int64()]
-		value = bigutil.DivInt(value, big.NewInt(36))
+		value = bigint.Div(value, big.NewInt(36))
 		if value.String() == "0" {
 			break
 		}
@@ -82,8 +82,8 @@ func DecodeBigInt(s string) *big.Int {
 	for idx := range s {
 		c := s[l-idx]
 		biVal := new(big.Int)
-		pow := bigutil.PowInt(bigRadix, big.NewInt(int64(idx)))
-		biVal.Mul(bigutil.NewIntUint64(uint64(index[c])), pow)
+		pow := bigint.Pow(bigRadix, big.NewInt(int64(idx)))
+		biVal.Mul(bigint.NewIntUint64(uint64(index[c])), pow)
 		res = res.Add(res, biVal)
 	}
 	return res
