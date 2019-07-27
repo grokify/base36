@@ -2,6 +2,7 @@ package base36
 
 import (
 	"math"
+	"math/big"
 	"strings"
 	"testing"
 
@@ -47,5 +48,29 @@ func BenchmarkEncodeBytesAsBytes(b *testing.B) {
 func BenchmarkDecode(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		Decode("1Y2P0IJ32E8E7")
+	}
+}
+
+var rawBig = []string{
+	"125893641179230474042701625388361764291",
+	"315065379476721403163906509030895717772"}
+
+var encodedBig = []string{
+	"5LUW5LD8T195DPILIVA0KRVSZ",
+	"E16CS890IHYK8HVPFEZBNCFPO"}
+
+func TestEncodeBigInt(t *testing.T) {
+	for i, v := range rawBig {
+		vInt := new(big.Int)
+		vInt.SetString(v, 10)
+		assert.Equal(t, encodedBig[i], EncodeBigInt(vInt))
+	}
+}
+
+func TestDecodeBigInt(t *testing.T) {
+	for i, v := range encodedBig {
+		rawDecode := DecodeBigInt(v)
+		assert.Equal(t, rawBig[i], rawDecode.String())
+		//assert.Equal(t, rawBig[i], DecodeBigInt(strings.ToLower(v)))
 	}
 }

@@ -4,6 +4,8 @@ import (
 	"math"
 	"math/big"
 	"strings"
+
+	"github.com/grokify/gotilla/math/bigutil"
 )
 
 var (
@@ -31,6 +33,33 @@ var (
 	}
 )
 
+// ModBigInt performs `a mod n`
+func modBigInt(a, n *big.Int) *big.Int {
+	amodn := new(big.Int)
+	return amodn.Mod(a, n)
+}
+
+func divBigInt(a, b *big.Int) *big.Int {
+	amodn := new(big.Int)
+	return amodn.Div(a, b)
+}
+
+// EncodeBigInt encodes a number to base36.
+func EncodeBigInt(value *big.Int) string {
+	var res [128]byte
+	var i int
+	for i = len(res) - 1; ; i-- {
+		remainder := modBigInt(value, bigRadix)
+		res[i] = base36[remainder.Int64()]
+		value = divBigInt(value, big.NewInt(36))
+		if value.String() == "0" {
+			break
+		}
+	}
+
+	return string(res[i:])
+}
+
 // Encode encodes a number to base36.
 func Encode(value uint64) string {
 	var res [16]byte
@@ -53,6 +82,20 @@ func Decode(s string) uint64 {
 	for idx := range s {
 		c := s[l-idx]
 		res += uint64(index[c]) * uint64(math.Pow(36, float64(idx)))
+	}
+	return res
+}
+
+// DecodeBigInt decodes a base36-encoded string.
+func DecodeBigInt(s string) *big.Int {
+	res := new(big.Int)
+	l := len(s) - 1
+	for idx := range s {
+		c := s[l-idx]
+		biVal := new(big.Int)
+		pow := bigutil.PowInt(bigRadix, big.NewInt(int64(idx)))
+		biVal.Mul(bigutil.NewIntUint64(uint64(index[c])), pow)
+		res = res.Add(res, biVal)
 	}
 	return res
 }
