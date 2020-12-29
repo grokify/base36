@@ -5,7 +5,7 @@ import (
 	"math/big"
 	"strings"
 
-	"github.com/grokify/gotilla/math/bigint"
+	"github.com/grokify/simplego/math/bigint"
 )
 
 var (
